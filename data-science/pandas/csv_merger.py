@@ -1,12 +1,5 @@
 import pandas as pd
 
-FILE_SOURCE_PATHS = [
-    "D:\Studyzone\Data-science-ml\data\TE_14April.csv",
-    "D:\Studyzone\Data-science-ml\data\TE_15April.csv",
-    "D:\Studyzone\Data-science-ml\data\TE_16April.csv",
-    "D:\Studyzone\Data-science-ml\data\TE_17April.csv",
-    "D:\Studyzone\Data-science-ml\data\TE_18April.csv"
-]
 
 class FileMerger:
 
@@ -25,7 +18,3 @@ class FileMerger:
         merged_df.to_csv('thousands_eye_kpi_data.csv', index=False)
 
 
-if __name__ == "__main__":
-    fileMerger = FileMerger(source_paths=FILE_SOURCE_PATHS)
-
-    fileMerger.merge_multiple_csv()
