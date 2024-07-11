@@ -1,6 +1,5 @@
 import pandas as pd
 
-SOURCE_FILE = "D:\Studyzone\Data-science-ml\data\dnac_cpu_health_500_records.csv"
 
 class ReadingDataFrame:
 
@@ -16,11 +15,3 @@ class ReadingDataFrame:
         first_five_dataset = df.head(5)
         print(f"First Five Records from Entire Data Frame.\n{first_five_dataset}")
 
-
-if __name__ == "__main__":
-
-    # Create the instance of the class
-
-    readingDF = ReadingDataFrame(SOURCE_FILE)
-
-    readingDF.basic_read_operation()
