@@ -1,6 +1,8 @@
 import pandas as pd
 from datetime import datetime, timedelta
 import calendar
+import numpy as np
+import pytz
 
 class DateTimeUtils:
     """
@@ -46,8 +48,20 @@ class DateTimeUtils:
 
     @staticmethod
     def _update_month(dataframe, time_column, destination_file_path):
+        """
+        Updates the month in the specified time column of the DataFrame to the previous month.
+        If the current month is January, the previous month is set to December of the previous year.
+        Days that exceed the last day of the previous month are adjusted to the last valid day.
+        
+        Parameters:
+        dataframe (pd.DataFrame): The DataFrame containing the time data to be updated.
+        time_column (str): The name of the column in the DataFrame that contains datetime objects.
+        destination_file_path (str): The file path where the updated CSV will be saved.
+        
+        Returns:
+        None: The method writes the updated DataFrame to a CSV file and does not return anything.
+        """    
 
-        # Step 2: Update the month in the time column to the current month minus one
         # Get the current month
         current_month = datetime.now().month
         current_year = datetime.now().year
@@ -58,17 +72,62 @@ class DateTimeUtils:
         previous_year = current_year if  current_month > 1 else current_year - 1
         print(f"Previous Month: {previous_month}")
 
-        # Last day of the month
+        # Find the last day of the previous month
         last_day_of_month = calendar.monthrange(previous_year, previous_month)[1]
         print(f"Last Day of the month: {last_day_of_month}")
 
-        # Use the minimum of the original day and the last day of the target month
-       # new_day = min(time_column.day, last_day_of_month)
-
+        # Update the time column to the previous month, adjusting the year and day as necessary
         dataframe[time_column] = dataframe[time_column].apply(lambda dt: dt.replace(month=previous_month, year=dt.year if current_month > 1 else dt.year - 1, day=min(dt.day, last_day_of_month)))
         print(f"Updated Time: {dataframe[time_column]}")
 
-        # Step 3: Write the updated DataFrame back to the CSV file
+        # Write the updated DataFrame back to the CSV file
         dataframe.to_csv(destination_file_path, index=False)
+    
+    def generate_synthetic_timeseries_data():
+
+
+        # Define your KPIs and indexes
+        kpis = ['KPI1', 'KPI2', 'KPI3']
+        indexes = ['Index1', 'Index2', 'Index3']
+
+        # User-defined parameters for time series generation
+        past_time_hours = 24  # How many hours in the past to start the time series
+        interval_minutes = 5  # Time interval in minutes
+        value_range = (0, 100)  # Range for generating random values
+
+        # Generate a time series index from the current time to the user-defined past time with the given interval
+        current_time = datetime.now()
+        start_time = current_time - timedelta(days=0, hours=0, minutes=10)
+        print(start_time)
+        time_index = pd.date_range(start=start_time, end=current_time, freq=f'{interval_minutes}T')
+
+        # Choose a timezone (e.g., 'US/Eastern', 'Europe/Berlin', 'UTC')
+        timezone = pytz.timezone('UTC')
+        current_time = datetime.now(tz=timezone).replace(microsecond=0)
+        print(f"Current Time: {timezone}")
+        interval = current_time - timedelta(days=0, hours=1, minutes=0)
+
+        # Assuming the original data has a frequency, e.g., '5T' for 5 minutes
+        frequency = '1T'  # Adjust this to match the frequency of your original data
+        time_index = pd.date_range(start=interval, end=current_time, freq=frequency)
+
+        # Generate random values for each KPI and index combination
+        data = []
+        for kpi in kpis:
+            for index in indexes:
+                # Generate random values for the current KPI and index
+                random_values = np.random.uniform(value_range[0], value_range[1], len(time_index))
+                random_values = np.round(random_values, 2)
+                for timestamp, value in zip(time_index, random_values):
+                    print(value, timestamp)
+                    data.append({'node_name': 'device', 'kpi_name': kpi, 'index': index, 'time': str(timestamp), 'value': value})
+
+        # Create a DataFrame with the generated data
+        df = pd.DataFrame(data)
+        print(df.head(10))
+
+        # Write the DataFrame to a CSV file
+        df.to_csv('generated_data.csv', index=False)
+
 
     
